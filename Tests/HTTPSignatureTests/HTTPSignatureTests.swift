@@ -21,14 +21,16 @@ import Testing
         "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VuAyEAtV5dzF+zZV9Yup+riEAqaCNol/JumbAPjrT6CkEdpGg=\n-----END PUBLIC KEY-----\n"
 
     @Test func CanInitSigningKeyFromRSAPubKey() throws {
-        let signKey = try SigningKey.init(rsaPem: exampleRSAPubKey)
+        let signKey = try SigningKey.init(pem: exampleRSAPubKey)
         #expect(signKey.rsaPublicKey != nil)
+        #expect(signKey.keyType == .rsa2048)
         #expect(signKey.rsaPublicKey!.keySizeInBits == 2048)
     }
 
     @Test func CanInitSigningKeyFromECPubKey() throws {
-        let signKey = try SigningKey.init(ecPem: examplePublicKey)
+        let signKey = try SigningKey.init(pem: examplePublicKey)
         #expect(signKey.ecPublicKey != nil)
+        #expect(signKey.keyType == .curve25519)
         #expect(signKey.ecPublicKey!.rawRepresentation.count == 32)
     }
 
@@ -37,21 +39,15 @@ import Testing
         arguments: [
             "some random string",
             """
-                -----BEGIN PUBLIC KEY-----
-            MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtV8LJAscsGgAgtUsR1Tx
-            0rcgqw8178DKu67F76dmWVQB1MLdDmyrAZv6XNrpqikMaZfjzdUERn14phBtPw+Z
-            RFl7IUFyOYWUqOLJKN1d7YKK1cMg2fQEndL6kBg6sB/Ipp1YNwr/H82OsbriAznu
-            n/q5OgMAZ3E0zu0nIwonNykI5NrE+yoe6KSa3Cy4QWpqTZJ1BeW29ZsJUzmM4hfE
-            s3M/hRmh44o8NJ/9hY9UsoItMXrV4C76o25DG1mOsR/GqpMVXVBQzxez7GS2Yo+6
-            AlMsxgaoPbMrVe5o2fbnhT7yBrdAnt0XFaofxiSau4n9xfjRmB2edIuevh+kfGpR
-            aQIDAQAB
+            -----BEGIN PUBLIC KEY-----
+            some stuff
             -----END PUBLIC KEY-----
             """,
         ]
     )
     func cannotInitECPubKeyWithBadData(badInput: String) throws {
         #expect(throws: (any Error).self) {
-            try SigningKey.init(ecPem: badInput)
+            try SigningKey.init(pem: badInput)
         }
     }
 
