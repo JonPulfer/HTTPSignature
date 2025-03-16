@@ -21,14 +21,14 @@ import Testing
         "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VuAyEAtV5dzF+zZV9Yup+riEAqaCNol/JumbAPjrT6CkEdpGg=\n-----END PUBLIC KEY-----\n"
 
     @Test func CanInitSigningKeyFromRSAPubKey() throws {
-        let signKey = try SigningKey.init(pem: exampleRSAPubKey)
+        let signKey = try SigningPublicKey.init(pem: exampleRSAPubKey)
         #expect(signKey.rsaPublicKey != nil)
         #expect(signKey.keyType == .rsa2048)
         #expect(signKey.rsaPublicKey!.keySizeInBits == 2048)
     }
 
     @Test func CanInitSigningKeyFromECPubKey() throws {
-        let signKey = try SigningKey.init(pem: examplePublicKey)
+        let signKey = try SigningPublicKey.init(pem: examplePublicKey)
         #expect(signKey.ecPublicKey != nil)
         #expect(signKey.keyType == .curve25519)
         #expect(signKey.ecPublicKey!.rawRepresentation.count == 32)
@@ -47,8 +47,12 @@ import Testing
     )
     func cannotInitECPubKeyWithBadData(badInput: String) throws {
         #expect(throws: (any Error).self) {
-            try SigningKey.init(pem: badInput)
+            try SigningPublicKey.init(pem: badInput)
         }
     }
+
+}
+
+@Suite class SignatureVerification {
 
 }
