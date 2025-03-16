@@ -3,7 +3,7 @@ import Testing
 
 @testable import HTTPSignature
 
-@Suite class KeyHandling {
+@Suite class KeyHandlingTests {
     let exampleRSAPubKey = """
             -----BEGIN PUBLIC KEY-----
         MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtV8LJAscsGgAgtUsR1Tx
@@ -54,9 +54,9 @@ import Testing
 
 }
 
-@Suite class SignedData {
+@Suite class SignatureDataTests {
 
-    @Test func signedDataInitialisesCorrectly() throws {
+    @Test func SignatureDataInitialisesCorrectly() throws {
         let exampleSignatureHeader =
             #"keyId="https://my-example.com/actor#main-key",headers="(request-target)"#
             + #" host date digest",signature="some signature""#
