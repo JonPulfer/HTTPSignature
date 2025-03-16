@@ -1,3 +1,4 @@
+import Foundation
 import Testing
 
 @testable import HTTPSignature
@@ -53,6 +54,20 @@ import Testing
 
 }
 
-@Suite class SignatureVerification {
+@Suite class SignedData {
 
+    @Test func signedDataInitialisesCorrectly() throws {
+        let exampleSignatureHeader =
+            #"keyId="https://my-example.com/actor#main-key",headers="(request-target)"#
+            + #" host date digest",signature="some signature""#
+        let signatureData = try SignatureData(fromHeaders: ["Signature": exampleSignatureHeader])
+        #expect(signatureData.headers.count == 4)
+        #expect(signatureData.headers.contains("(request-target)") == true)
+        #expect(signatureData.headers.contains("host") == true)
+        #expect(signatureData.headers.contains("date") == true)
+        #expect(signatureData.headers.contains("digest") == true)
+        #expect(signatureData.keyId == "https://my-example.com/actor#main-key")
+        #expect(signatureData.signatureValue == "some signature")
+
+    }
 }

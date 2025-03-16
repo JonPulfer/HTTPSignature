@@ -113,20 +113,24 @@ struct SignatureData {
         }
         var foundHeaders: [String] = []
         for header in headerValue.split(separator: " ") {
-            foundHeaders.append(String(header))
+            var value = String(header)
+            value.replace("\"", with: "")
+            foundHeaders.append(value)
         }
         headers = foundHeaders
 
-        guard let signatureFieldValue = signatureParts[signatureSignatureField]
+        guard var signatureFieldValue = signatureParts[signatureSignatureField]
         else {
             throw SignatureErrors.signatureFieldMissing
         }
+        signatureFieldValue.replace("\"", with: "")
         signatureValue = signatureFieldValue
 
-        guard let keyIdValue = signatureParts[signatureKeyIdField]
+        guard var keyIdValue = signatureParts[signatureKeyIdField]
         else {
             throw SignatureErrors.keyIdFieldMissing
         }
+        keyIdValue.replace("\"", with: "")
         keyId = keyIdValue
     }
 
@@ -135,6 +139,7 @@ struct SignatureData {
         for header in headers {
             plaintext += (request.allHTTPHeaderFields?[header] ?? "")
         }
+        plaintext.replace("\"", with: "")
         return plaintext.withUTF8 { buffer in
             return buffer
         }

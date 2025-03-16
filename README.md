@@ -5,4 +5,12 @@
 
 # HTTPSignature
 
-Package that will use PKI (RSA, Curve25519) to verify and sign HTTP requests.
+Package that will use PKI (RSA, Curve25519) to verify the signature on HTTP requests. 
+
+This was written to verify signed requests originating from Mastodon. The `Signature` request header looks like: -
+
+```text
+Signature: keyId="https://my-example.com/actor#main-key",headers="(request-target) host date digest",signature="..."
+```
+_example taken from a [blog post](https://blog.joinmastodon.org/2018/06/how-to-implement-a-basic-activitypub-server/) about creating a mastodon service_
+
