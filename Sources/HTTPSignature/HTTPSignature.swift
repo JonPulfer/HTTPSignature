@@ -6,6 +6,30 @@ import Foundation
 import SwiftASN1
 import _CryptoExtras
 
+/// A SignedRequestVerifier is used to verify the signature of a signed request.
+public struct SignedRequestVerifier {
+    let signingPubKey: SigningPublicKey
+
+    public init(publicKeyPem: String) throws {
+        signingPubKey = try SigningPublicKey.init(pem: publicKeyPem)
+    }
+
+    public func isValidRequestSignature(request: URLRequest) throws -> Bool {
+        return try signingPubKey.isValidRequestSignature(request: request)
+    }
+}
+
+/// a SignedRequestSigner is able to sign a request using the provided private key.
+public struct SignedRequestSigner {
+    let signingPrivateKey: SigningPrivateKey
+
+    public init(privateKeyPem: String) throws {
+        signingPrivateKey = try SigningPrivateKey.init(pem: privateKeyPem)
+    }
+
+    // TODO(JP): implement request signing.
+}
+
 /// Number of bytes prefixed to Curve25519 DER representation bytes to describe the curve.
 let ecPemPrefix: Int = 12
 
@@ -69,6 +93,30 @@ struct SigningPublicKey {
         return false
     }
 
+}
+
+struct SigningPrivateKey {
+    let rsaPrivateKey: _RSA.Signing.PrivateKey?
+    let ecPrivateKey: Curve25519.Signing.PrivateKey?
+    let keyType: KeyTypes
+
+    init(pem: String) throws {
+        let pemDoc = try PEMDocument.init(pemString: pem)
+        if pemDoc.derBytes.count > ecPemPrefix + ecPemDataLen {
+            let rsaKey = try _RSA.Signing.PrivateKey(pemRepresentation: pem)
+            rsaPrivateKey = rsaKey
+            ecPrivateKey = nil
+            keyType = .rsa2048
+        } else {
+            let ecKey = try Curve25519.Signing.PrivateKey.init(
+                rawRepresentation:
+                    pemDoc.derBytes[ecPemPrefix...]
+            )
+            ecPrivateKey = ecKey
+            rsaPrivateKey = nil
+            keyType = .curve25519
+        }
+    }
 }
 
 enum KeyTypes {
